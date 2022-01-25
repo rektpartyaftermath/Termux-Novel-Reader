@@ -1,0 +1,131 @@
+#!/bin/bash
+red='\033[1;31m'
+yellow='\033[1;33m'
+blue='\033[1;34m'
+green='\033[1;32m'
+softblue='\033[0;34m'
+softgreen='\033[0;32m'
+reset='\033[0m'
+smallcounter=1
+
+# Time Converter i found on stackoverflow
+convertsecs() {
+ ((h=${1}/3600))
+ ((m=(${1}%3600)/60))
+ ((s=${1}%60))
+ printf "%02d:%02d:%02d\n" $h $m $s
+}
+# TIME1="36"
+# TIME2="1036"
+# TIME3="91925"
+# 
+# echo $(convertsecs $TIME1)
+# echo $(convertsecs $TIME2)
+# echo $(convertsecs $TIME3)
+########################################
+
+# Ctrl+c handler
+trap ctrl_c INT
+ctrl_c(){
+	echo "quit at line $COUNTER"
+	echo -e "$COUNTER\n$SPEED" > $LASTLINE
+	exit
+}
+COUNTER=1
+COUNTER1=1
+SPEED=1.5
+JUMLINE=$( wc -l < $1 )
+NAMEFILE=$( basename $1 )
+LASTLINE=~/Reader/$NAMEFILE\_hist
+# TIMEETA=$(awk -v juline='$JUMLINE' -v speed='$SPEED' 'BEGIN{print juline * 88 "bakso"}')
+# awk -v sec=$sec 'BEGIN{print sec / 3600 " is the amount of hours"}'
+# btw klo pake if, variabel mending di apit "", biar ga error
+if test -f "$1"; 
+then
+	echo "$JUMLINE Lines"
+else
+	exit
+fi
+if [ "$2" == "-RESET" ]
+then
+	read -p "Press Enter to Reset Progress?"
+	echo -e "$COUNTER\n$SPEED" > $LASTLINE
+elif [ "$2" == "-SPEED" ]
+then
+	echo "How fast?"
+	read SPEED
+	if test -f "$LASTLINE"; 
+	then
+		COUNTER=$( sed -n 1\p $LASTLINE )
+	fi
+	if [ "$SPEED" -gt "1" ]
+	then
+		echo -e "$COUNTER\n$SPEED" > $LASTLINE
+	else
+		SPEED=1
+		echo -e "$COUNTER\n$SPEED" > $LASTLINE
+	fi
+
+
+fi
+if test -f "$LASTLINE"; 
+then
+	COUNTER=$( sed -n 1\p $LASTLINE )
+	SPEED=$( sed -n 2\p $LASTLINE )
+	echo "Continue reading from line $COUNTER / $JUMLINE"
+	echo "With speed of $SPEED second per line"
+	TIMETA=$( awk 'BEGIN{joj='$JUMLINE'; sec='$COUNTER'; zoc='$SPEED'; print int((joj - sec) * zoc)}' )
+	echo $(convertsecs $TIMETA)" Left." 
+	if [ "$COUNTER" -ge "15" ]
+	then
+		COUNTER1=$( echo $(($COUNTER - 15)) )
+	fi
+	echo "--------------------------"
+	sed -n $COUNTER1,$COUNTER\p $1
+	echo "-------------------------"
+	read -s -n 1 -p "Press any key to continue"
+	echo -e "\x1B[2K"
+fi
+while [ $COUNTER -le $JUMLINE ]
+do
+#	if [ "$smallcounter" -le "2" ]
+#	then
+#		echo -ne $reset
+#		((smallcounter++))
+#	else
+#		echo -ne $reset
+#		((smallcounter--))
+#	fi
+	sed -n $COUNTER\p $1
+	read -r -s -N 1 -t "$SPEED" User
+	if [ "$User" == "-" ]
+	then
+		echo "--------"
+		TIMETA=$( awk 'BEGIN{joj='$JUMLINE'; sec='$COUNTER'; zoc='$SPEED'; print int((joj - sec) * zoc)}' )
+		echo $(convertsecs $TIMETA)" Left." 
+		read -s -n 1 -p "Paused on $COUNTER / $JUMLINE" paused
+		echo -e "\n--------"
+	fi
+	if [ "$paused" == "|" ]
+	then
+		echo -e "$COUNTER\n$SPEED" > $LASTLINE
+		echo "quit at line $COUNTER"
+		break
+	fi
+	if [ "$paused" == "j" ]
+	then
+		echo "jump where?"
+		read Destination
+		if [ "$Destination" -le "$JUMLINE" ]
+		then
+			echo -e "$Destination\n$SPEED" > $LASTLINE
+			COUNTER=$( sed -n 1\p $LASTLINE )
+			paused="z"	#biar ga ngeloop
+		else
+			echo "Out of range!"
+			echo -e "\n--------"
+			paused="z"	#biar ga ngeloop
+		fi
+	fi
+	((COUNTER++))
+done
