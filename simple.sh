@@ -18,7 +18,7 @@ do
 		cutCount1=1
 	fi
 	sed -n $cutCount1,$cutCount\p $fileList > ./cuttersimple.txt
-	cat ./cuttersimple.txt | xargs -P $cutStep -n 1 bash /data/data/com.termux/files/home/bin/T1Translate.sh
+	cat ./cuttersimple.txt | xargs -P $cutStep -n 1 bash /content/T1Translate.sh
 	cutCount1=$(( "$cutCount1" + "$cutStep" ))
 	echo "done"
 done
