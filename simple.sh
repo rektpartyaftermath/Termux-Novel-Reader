@@ -6,7 +6,7 @@
 #when done, pack all translated file into 1, with correct numbered name
 cutCount=0
 cutCount1=0
-cutStep=100
+cutStep=40
 fileList=./list.txt
 ls ./Chapter-*.txt | sort -V > $fileList
 totalFile=$( wc -l < $fileList )
