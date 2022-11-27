@@ -33,6 +33,7 @@ targetLang="en"
 sourceLang="auto"
 finalFileName="$fileName-Translated.txt"
 textLengthMax="4000"
+echo " " >> $finalFileName
 echo "$fileName" >> $finalFileName
 while IFS= read -r line
 do
