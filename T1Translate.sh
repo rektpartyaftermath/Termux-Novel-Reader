@@ -1,4 +1,7 @@
 #!/bin/bash
+# TODO
+# Try using getopt
+
 # What this script does
 # xxd -p -c1 testxxd | tr [:lower:] [:upper:]
 # add % to beggining of each line
@@ -6,32 +9,37 @@
 # use curl or lynx to 
 # https://t1.translatedict.com/1.php?p1=zh-TW&p2=en&p3= HERE
 # output that to a new file
-fileName=$( basename $1 .txt)
-while IFS= read -r line
-do
+
+dataProcessing() {
 	convertedFile+=$(echo "$line"| xxd -p -c1 | tr [:lower:] [:upper:] | sed 's/^/\%/g' | tr -d '\n')
 	charCount=$(echo "${#convertedFile}")
-	if [ "$charCount" -gt 4000 ]
-	then
-	#	Chinese Traditional
-	#	links=$(echo "https://t1.translatedict.com/1.php?p1=zh-TW&p2=en&p3=$convertedFile")
+}
 
-	#	Chinese Simplified
-	#	links=$(echo "https://t1.translatedict.com/1.php?p1=zh&p2=en&p3=$convertedFile")
-
-	#	Japanese
-	#	links=$(echo "https://t1.translatedict.com/1.php?p1=ja&p2=en&p3=$convertedFile")
-
-	#	Auto Detect
-		links=$(echo "https://t1.translatedict.com/1.php?p1=auto&p2=en&p3=$convertedFile")
-		
-	#	w3m -dump  \'$links\' >> result.txt
-	#	lynx -dump -width=5000 -nolist $links | sed 's/\.\ /\.\n/g'	>> $fileName\-Translated.txt
-		echo -ne "\rProcessing $fileName charCount $charCount "
-		curl -s "$links" >> $fileName\-Translated.txt
+translation() {
+		links=$(echo "https://t1.translatedict.com/1.php?p1=$sourceLang&p2=$targetLang&p3=$convertedFile")
+		echo -ne "\r$fileName | $charCount "
+		curl -s "$links" >> $finalFileName
 		convertedFile=''
+}
+
+# Chinese Traditional = TW
+# Chinese Simplified = zh
+# Japanese = ja
+# English = en
+# Indonesian = id
+# Autodetect source lang = auto
+fileName=$( basename $1 .txt)
+targetLang="en"
+sourceLang="auto"
+finalFileName="$fileName-Translated.txt"
+textLengthMax="4000"
+echo "$fileName" >> $finalFileName
+while IFS= read -r line
+do
+	dataProcessing
+	if [ "$charCount" -gt $textLengthMax ]; then
+		translation
 	fi
 done < "$1"
-	links=$(echo "https://t1.translatedict.com/1.php?p1=auto&p2=en&p3=$convertedFile")
-	curl -s "$links" >> $fileName\-Translated.txt
-echo "$fileName is Done! With remainder of $charCount"
+translation
+echo "$fileName is Done! | $charCount"
