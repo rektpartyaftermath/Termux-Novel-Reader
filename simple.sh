@@ -28,8 +28,8 @@ resultName="All-Translated.txt"
 while IFS= read -r transLine
 do
 	chapterNum=$(echo "$transLine" | tr -d [:alpha:][:punct:])
-	echo "" >> $resultName
-	echo "Chapter-$chapterNum" >> $resultName
-	sed '1d' $transLine >> $resultName
+	# echo "" >> $resultName
+	# echo "Chapter-$chapterNum" >> $resultName
+	cat $transLine >> $resultName
 done < ./listTrans.txt
 echo "All done!"
