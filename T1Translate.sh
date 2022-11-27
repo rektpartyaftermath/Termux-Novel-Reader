@@ -16,10 +16,10 @@ dataProcessing() {
 }
 
 translation() {
-		links=$(echo "https://t1.translatedict.com/1.php?p1=$sourceLang&p2=$targetLang&p3=$convertedFile")
-		echo -ne "\r$fileName | $charCount "
-		curl -s "$links" >> $finalFileName
-		convertedFile=''
+	links=$(echo "https://t1.translatedict.com/1.php?p1=$sourceLang&p2=$targetLang&p3=$convertedFile")
+	echo -ne "\r$fileName | $charCount "
+	curl -s "$links" >> $finalFileName
+	convertedFile=''
 }
 
 # Chinese Traditional = TW
