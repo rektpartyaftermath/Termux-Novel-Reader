@@ -10,6 +10,7 @@ cutStep=40
 fileList=./list.txt
 ls ./Chapter-*.txt | sort -V > $fileList
 totalFile=$( wc -l < $fileList )
+zitxName=$( basename *.zitx .zitx )
 echo $totalFile
 while [ $cutCount -lt $totalFile ]
 do
@@ -24,7 +25,7 @@ do
 done
 echo "Start Packing"
 ls ./*Translated.txt | sort -V > ./listTrans.txt
-resultName="All-Translated.txt"
+resultName="$zitxName"
 while IFS= read -r transLine
 do
 	chapterNum=$(echo "$transLine" | tr -d [:alpha:][:punct:])
