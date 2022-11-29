@@ -25,12 +25,13 @@ do
 done
 echo "Start Packing"
 ls ./*Translated.txt | sort -V > ./listTrans.txt
-resultName="$zitxName.txt"
+resultName="./$zitxName.txt"
 while IFS= read -r transLine
 do
-	chapterNum=$(echo "$transLine" | tr -d [:alpha:][:punct:])
+	# chapterNum=$(echo "$transLine" | tr -d [:alpha:][:punct:])
 	# echo "" >> $resultName
 	# echo "Chapter-$chapterNum" >> $resultName
 	cat $transLine >> $resultName
 done < ./listTrans.txt
+zip -j -m -9 ./$zitxName\.zip $resultName
 echo "All done!"
