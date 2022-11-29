@@ -25,7 +25,7 @@ do
 done
 echo "Start Packing"
 ls ./*Translated.txt | sort -V > ./listTrans.txt
-resultName="$zitxName"
+resultName="$zitxName.txt"
 while IFS= read -r transLine
 do
 	chapterNum=$(echo "$transLine" | tr -d [:alpha:][:punct:])
