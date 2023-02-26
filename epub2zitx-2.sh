@@ -2,7 +2,7 @@
 # Epub2txt-dir, simple script to convert epub to raw txt
 # Then place them on a directory with a same file name
 # Experimental script, need more testing.
-tmploc=~/tmp/epubketeks
+tmploc=./tmp
 unzip -j "$1" "*html*" -d $tmploc
 listfilinput=$tmploc/list.txt
 ls $tmploc/*html | sort -V > $listfilinput
